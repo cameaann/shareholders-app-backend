@@ -19,10 +19,10 @@ public class Share {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int quantity;
+    private int quantity; // Amount of shares owned
 
     @ManyToOne
-    @JoinColumn(name = "shareholder_id")
+    @JoinColumn(name = "shareholder_id", nullable = false) // Adding nullable = false for integrity
     @JsonBackReference
     private Shareholder shareholder;
 }
