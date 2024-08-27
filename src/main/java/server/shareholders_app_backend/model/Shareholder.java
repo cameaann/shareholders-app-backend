@@ -22,6 +22,18 @@ public class Shareholder {
 
     private String name;
 
+    private Integer maara; // Number of shares
+
+    private Double omistusPercentage; // Ownership percentage
+
+    private String hetuYtunnus; // Personal ID or company identifier
+
+    private String kotipaikka; // Place of residence or headquarters
+
+    private String yhteystiedot; // Contact information
+
+    private String tilinro; // Bank account number
+
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<Share> shares;
