@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ShareholderService {
@@ -18,15 +17,11 @@ public class ShareholderService {
         return shareholderRepository.findAll();
     }
 
-    public Optional<Shareholder> getShareholderById(Long id) {
-        return shareholderRepository.findById(id);
+    public Shareholder getShareholderById(Long id) {
+        return shareholderRepository.findById(id).orElse(null);
     }
 
     public Shareholder saveShareholder(Shareholder shareholder) {
         return shareholderRepository.save(shareholder);
-    }
-
-    public void deleteShareholder(Long id) {
-        shareholderRepository.deleteById(id);
     }
 }
