@@ -20,8 +20,6 @@ public class Shareholder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer quantity; // Number of shares
-
     private String name; // Shareholder's name
 
     private Double ownershipPercentage; // Ownership percentage
@@ -41,4 +39,16 @@ public class Shareholder {
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<Share> shares;
+
+    @Transient // This field will not be persisted in the database
+    private Integer totalShares;
+
+    @PostLoad
+    private void calculateTotalShares() {
+        if (shares != null) {
+            totalShares = shares.stream().mapToInt(Share::getQuantity).sum();
+        } else {
+            totalShares = 0;
+        }
+    }
 }
