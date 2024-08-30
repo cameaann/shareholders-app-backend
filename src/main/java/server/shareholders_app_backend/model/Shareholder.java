@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
+import java.text.DecimalFormat;
 import java.util.Set;
+import server.shareholders_app_backend.config.ApplicationConstants;
 
 @Entity
 @Getter
@@ -20,35 +22,42 @@ public class Shareholder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Shareholder's name
+    private String name; // Имя акционера
 
-    private Double ownershipPercentage; // Ownership percentage
+    private String personalIdOrCompanyId; // Личный идентификатор или идентификатор компании
 
-    private String personalIdOrCompanyId; // Personal ID or company identifier
+    private String placeOfResidenceOrHeadquarters; // Место проживания или головной офис
 
-    private String placeOfResidenceOrHeadquarters; // Place of residence or headquarters
+    private String address; // Адрес акционера
 
-    private String address; // Address of the shareholder
+    private String emailAddress; // Электронная почта акционера
 
-    private String emailAddress; // Email address of the shareholder
+    private String phoneNumber; // Телефонный номер акционера
 
-    private String phoneNumber; // Phone number of the shareholder
-
-    private String bankAccountNumber; // Bank account number
+    private String bankAccountNumber; // Номер банковского счета
 
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<ShareRange> shares;
 
-    @Transient // This field will not be persisted in the database
+    @Transient // Это поле не будет сохранено в базе данных
     private Integer totalShares;
 
+    @Transient // Это поле не будет сохранено в базе данных
+    private String ownershipPercentage;
+
     @PostLoad
-    private void calculateTotalShares() {
+    private void calculateShareDetails() {
         if (shares != null) {
             totalShares = shares.stream().mapToInt(ShareRange::getQuantity).sum();
         } else {
             totalShares = 0;
         }
+
+        double percentage = (totalShares.doubleValue() / ApplicationConstants.TOTAL_SHARES_IN_COMPANY) * 100;
+
+        // Форматируем процент с 4 десятичными знаками
+        DecimalFormat df = new DecimalFormat("0.0000");
+        ownershipPercentage = df.format(percentage) + "%";
     }
 }
