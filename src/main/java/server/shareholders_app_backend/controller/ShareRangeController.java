@@ -1,7 +1,7 @@
 package server.shareholders_app_backend.controller;
 
-import server.shareholders_app_backend.model.Share;
-import server.shareholders_app_backend.service.ShareService;
+import server.shareholders_app_backend.model.ShareRange;
+import server.shareholders_app_backend.service.ShareRangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,23 +10,23 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/shares")
-public class ShareController {
+public class ShareRangeController {
 
     @Autowired
-    private ShareService shareService;
+    private ShareRangeService shareService;
 
     @GetMapping
-    public List<Share> getAllShares() {
+    public List<ShareRange> getAllShares() {
         return shareService.getAllShares();
     }
 
     @GetMapping("/{id}")
-    public Optional<Share> getShareById(@PathVariable Long id) {
+    public Optional<ShareRange> getShareById(@PathVariable Long id) {
         return shareService.getShareById(id);
     }
 
     @PostMapping
-    public Share createShare(@RequestBody Share share) {
+    public ShareRange createShare(@RequestBody ShareRange share) {
         return shareService.saveShare(share);
     }
 

@@ -38,7 +38,7 @@ public class Shareholder {
 
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private Set<Share> shares;
+    private Set<ShareRange> shares;
 
     @Transient // This field will not be persisted in the database
     private Integer totalShares;
@@ -46,7 +46,7 @@ public class Shareholder {
     @PostLoad
     private void calculateTotalShares() {
         if (shares != null) {
-            totalShares = shares.stream().mapToInt(Share::getQuantity).sum();
+            totalShares = shares.stream().mapToInt(ShareRange::getQuantity).sum();
         } else {
             totalShares = 0;
         }
