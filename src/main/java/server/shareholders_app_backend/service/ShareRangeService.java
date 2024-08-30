@@ -1,7 +1,7 @@
 package server.shareholders_app_backend.service;
 
-import server.shareholders_app_backend.model.Share;
-import server.shareholders_app_backend.repository.ShareRepository;
+import server.shareholders_app_backend.model.ShareRange;
+import server.shareholders_app_backend.repository.ShareRangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,20 +9,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ShareService {
+public class ShareRangeService {
 
     @Autowired
-    private ShareRepository shareRepository;
+    private ShareRangeRepository shareRepository;
 
-    public List<Share> getAllShares() {
+    public List<ShareRange> getAllShares() {
         return shareRepository.findAll();
     }
 
-    public Optional<Share> getShareById(Long id) {
+    public Optional<ShareRange> getShareById(Long id) {
         return shareRepository.findById(id);
     }
 
-    public Share saveShare(Share share) {
+    public ShareRange saveShare(ShareRange share) {
         return shareRepository.save(share);
     }
 
