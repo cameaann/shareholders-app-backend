@@ -20,35 +20,41 @@ public class Shareholder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Shareholder's name
+    private String name; // Имя акционера
 
-    private Double ownershipPercentage; // Ownership percentage
+    private Double ownershipPercentage; // Процент владения
 
-    private String personalIdOrCompanyId; // Personal ID or company identifier
+    private String personalIdOrCompanyId; // Личный идентификатор или идентификатор компании
 
-    private String placeOfResidenceOrHeadquarters; // Place of residence or headquarters
+    private String placeOfResidenceOrHeadquarters; // Место жительства или штаб-квартира
 
-    private String address; // Address of the shareholder
+    private String address; // Адрес акционера
 
-    private String emailAddress; // Email address of the shareholder
+    private String emailAddress; // Электронная почта акционера
 
-    private String phoneNumber; // Phone number of the shareholder
+    private String phoneNumber; // Номер телефона акционера
 
-    private String bankAccountNumber; // Bank account number
+    private String bankAccountNumber; // Номер банковского счета
 
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<Share> shares;
 
-    @Transient // This field will not be persisted in the database
-    private Integer totalShares;
+    @Transient // Это поле не будет сохранено в базе данных
+    private Integer totalShares; // Общее количество акций
 
-    @PostLoad
-    private void calculateTotalShares() {
-        if (shares != null) {
-            totalShares = shares.stream().mapToInt(Share::getQuantity).sum();
-        } else {
-            totalShares = 0;
-        }
+    private Integer startNumber; // Начальный номер
+
+    private Integer endNumber; // Конечный номер
+     // Метод для получения общего количества акций
+     public Integer getTotalShares() {
+        return totalShares;
     }
+
+    // Метод для установки общего количества акций
+    public void setTotalShares(int totalShares) {
+        this.totalShares = totalShares;
+    }
+
+    
 }

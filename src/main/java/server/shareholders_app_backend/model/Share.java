@@ -18,6 +18,24 @@ public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name; // Shareholder's name
+
+    private Double ownershipPercentage; // Ownership percentage
+
+    private String personalIdOrCompanyId; // Personal ID or company identifier
+
+    private String placeOfResidenceOrHeadquarters; // Place of residence or headquarters
+
+    private String address; // Address of the shareholder
+
+    private String emailAddress; // Email address of the shareholder
+
+    private String phoneNumber; // Phone number of the shareholder
+
+    private String bankAccountNumber; 
+
+    private int startNumber;
+    private int endNumber;
 
     private int quantity; // Amount of shares owned
 
