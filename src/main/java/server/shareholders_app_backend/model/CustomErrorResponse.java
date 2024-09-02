@@ -1,17 +1,19 @@
 package server.shareholders_app_backend.model;
 
+import java.util.List;
+
 public class CustomErrorResponse {
-    private String message;
+    private List<String> errorMessages;
 
-    public CustomErrorResponse(String message) {
-        this.message = message;
+    public CustomErrorResponse(List<String> errorMessages) {
+        this.errorMessages = errorMessages;
     }
 
-    public String getMessage() {
-        return message;
+    public List<String> getErrorMessages() {
+        return errorMessages;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setErrorMessages(List<String> errorMessages) {
+        this.errorMessages = errorMessages;
     }
 }

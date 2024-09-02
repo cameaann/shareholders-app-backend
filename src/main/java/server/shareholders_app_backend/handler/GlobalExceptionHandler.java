@@ -9,25 +9,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import server.shareholders_app_backend.model.CustomErrorResponse;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody
     public ResponseEntity<CustomErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        // Extract the first validation error message
+        // Extract all validation error messages
         Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
-        String errorMessage = violations.stream()
+        List<String> errorMessages = violations.stream()
                 .map(ConstraintViolation::getMessage)
-                .findFirst()
-                .orElse("Validation error");
+                .collect(Collectors.toList());
 
         // Create a custom error response
-        CustomErrorResponse errorResponse = new CustomErrorResponse(errorMessage);
+        CustomErrorResponse errorResponse = new CustomErrorResponse(errorMessages);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
