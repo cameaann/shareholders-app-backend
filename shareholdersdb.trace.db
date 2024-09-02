@@ -1,0 +1,8 @@
+2024-09-02 15:41:06.768018+03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found; SQL statement:
+INSERT INTO users (name, personalIdOrCompanyId, placeOfResidenceOrHeadquarters, address, emailAddress, phoneNumber, bankAccountNumber)
+VALUES ('Sample User', 'A987654321', 'Sample Town, CA', '456 Oak Avenue', 'sample.user@example.com', '555-987-6543', '6543210987654321') [42102-224]
+2024-09-02 15:42:43.965642+03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'2024-01-01' (SHARE_RANGE: ""ALKAEN"" INTEGER NOT NULL)"; SQL statement:
+INSERT INTO SHARE_RANGE (ALKAEN, PAATTYEN, SHAREHOLDER_ID)
+VALUES ('2024-01-01', '2024-12-31', 1) [22018-224]

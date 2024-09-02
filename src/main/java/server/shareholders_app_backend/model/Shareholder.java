@@ -39,7 +39,7 @@ public class Shareholder {
     private String address; // Shareholder's address
 
     @NotEmpty(message = "Email address cannot be empty")
-    @Email(message = "Invalid email format")
+    @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email format or missing dot in domain")
     private String emailAddress; // Shareholder's email address
 
     @NotEmpty(message = "Phone number cannot be empty")
