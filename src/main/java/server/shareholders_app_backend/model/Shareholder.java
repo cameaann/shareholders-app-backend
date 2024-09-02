@@ -1,15 +1,19 @@
 package server.shareholders_app_backend.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import server.shareholders_app_backend.config.ApplicationConstants;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import java.text.DecimalFormat;
 import java.util.Set;
-import server.shareholders_app_backend.config.ApplicationConstants;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Getter
@@ -22,28 +26,37 @@ public class Shareholder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Имя акционера
+    @NotEmpty(message = "Name cannot be empty")
+    private String name; // Shareholder's name
 
-    private String personalIdOrCompanyId; // Личный идентификатор или идентификатор компании
+    @NotEmpty(message = "Personal ID or Company ID cannot be empty")
+    private String personalIdOrCompanyId; // Personal ID or Company ID
 
-    private String placeOfResidenceOrHeadquarters; // Место проживания или головной офис
+    @NotEmpty(message = "Place of residence or headquarters cannot be empty")
+    private String placeOfResidenceOrHeadquarters; // Place of residence or headquarters
 
-    private String address; // Адрес акционера
+    @NotEmpty(message = "Address cannot be empty")
+    private String address; // Shareholder's address
 
-    private String emailAddress; // Электронная почта акционера
+    @NotEmpty(message = "Email address cannot be empty")
+    @Email(message = "Invalid email format")
+    private String emailAddress; // Shareholder's email address
 
-    private String phoneNumber; // Телефонный номер акционера
+    @NotEmpty(message = "Phone number cannot be empty")
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Invalid phone number format")
+    private String phoneNumber; // Shareholder's phone number
 
-    private String bankAccountNumber; // Номер банковского счета
+    @NotEmpty(message = "Bank account number cannot be empty")
+    private String bankAccountNumber; // Bank account number
 
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<ShareRange> shares;
 
-    @Transient // Это поле не будет сохранено в базе данных
+    @Transient // This field will not be saved in the database
     private Integer totalShares;
 
-    @Transient // Это поле не будет сохранено в базе данных
+    @Transient // This field will not be saved in the database
     private String ownershipPercentage;
 
     @PostLoad
@@ -56,7 +69,7 @@ public class Shareholder {
 
         double percentage = (totalShares.doubleValue() / ApplicationConstants.TOTAL_SHARES_IN_COMPANY) * 100;
 
-        // Форматируем процент с 4 десятичными знаками
+        // Format percentage with 4 decimal places
         DecimalFormat df = new DecimalFormat("0.0000");
         ownershipPercentage = df.format(percentage) + "%";
     }
