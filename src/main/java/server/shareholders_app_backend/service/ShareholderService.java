@@ -3,6 +3,7 @@ package server.shareholders_app_backend.service;
 import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.repository.ShareholderRepository;
+import server.shareholders_app_backend.exception.ShareholderDeletionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +23,10 @@ public class ShareholderService {
         Optional<Shareholder> shareholderOptional = shareholderRepository.findById(id);
         if (shareholderOptional.isPresent()) {
             Shareholder shareholder = shareholderOptional.get();
-            // Convert Set to List
             Set<ShareRange> shareSet = shareholder.getShares();
             if (shareSet != null) {
                 List<ShareRange> shareList = new ArrayList<>(shareSet);
-                // Sort the List
                 shareList.sort(Comparator.comparing(ShareRange::getId));
-                // If you need to preserve the order, set it back as a LinkedHashSet
                 shareholder.setShares(new LinkedHashSet<>(shareList)); // Optional
             }
             return Optional.of(shareholder);
@@ -41,6 +39,15 @@ public class ShareholderService {
     }
 
     public void deleteShareholder(Long id) {
-        shareholderRepository.deleteById(id);
+        Optional<Shareholder> shareholderOptional = shareholderRepository.findById(id);
+        if (shareholderOptional.isPresent()) {
+            Shareholder shareholder = shareholderOptional.get();
+            if (shareholder.getShares() != null && !shareholder.getShares().isEmpty()) {
+                throw new ShareholderDeletionException("Cannot delete shareholder with associated shares.");
+            }
+            shareholderRepository.deleteById(id);
+        } else {
+            throw new NoSuchElementException("Shareholder with ID " + id + " not found.");
+        }
     }
 }
