@@ -27,6 +27,8 @@ public class ShareRangeController {
 
     @PostMapping
     public ShareRange createShare(@RequestBody ShareRange share) {
+        // Ensure that the quantity is set correctly or handled as needed
+        // If needed, you could perform additional validation here
         return shareService.saveShare(share);
     }
 

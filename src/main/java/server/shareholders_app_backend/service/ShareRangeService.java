@@ -23,6 +23,8 @@ public class ShareRangeService {
     }
 
     public ShareRange saveShare(ShareRange share) {
+        // If needed, you could include additional logic here
+        // For example, setting up the quantity or performing validation
         return shareRepository.save(share);
     }
 
