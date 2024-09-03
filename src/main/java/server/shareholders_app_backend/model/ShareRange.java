@@ -18,20 +18,25 @@ public class ShareRange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int alkaen; // "From"
-    private int paattyen;
 
-    @Transient // This field will not be persisted in the database
+    // Remove alkaen and paattyen fields
+    // private int alkaen;
+    // private int paattyen;
+
+    @Column(nullable = false)
     private int quantity; // Amount of shares owned
 
     @ManyToOne
-    @JoinColumn(name = "shareholder_id", nullable = false) // Adding nullable = false for integrity
+    @JoinColumn(name = "shareholder_id", nullable = false)
     @JsonBackReference
     private Shareholder shareholder;
 
-    // Calculate quantity based on alkaen and paattyen
+    // Calculate quantity based on some other logic if needed
     @PostLoad
     public void calculateQuantity() {
-        this.quantity = this.paattyen - this.alkaen + 1;
+        // Implement logic if needed; you might need to set this based on some other
+        // conditions
+        // For example, if there is another field or calculation to determine quantity,
+        // include it here
     }
 }
