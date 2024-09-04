@@ -3,9 +3,12 @@ package server.shareholders_app_backend.service;
 import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.repository.ShareholderRepository;
+import server.shareholders_app_backend.repository.ShareRangeRepository;
+import server.shareholders_app_backend.config.ApplicationConstants;
 import server.shareholders_app_backend.exception.ShareholderDeletionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -14,6 +17,11 @@ public class ShareholderService {
 
     @Autowired
     private ShareholderRepository shareholderRepository;
+
+    @Autowired
+    private ShareRangeRepository shareRangeRepository;
+    @Autowired
+    private ShareRangeService shareRangeService;
 
     public List<Shareholder> getAllShareholders() {
         return shareholderRepository.findAll();
