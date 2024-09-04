@@ -51,7 +51,8 @@ public class Shareholder {
     private String phoneNumber; // Shareholder's phone number
 
     @NotEmpty(message = "Bank account number cannot be empty")
-    private String bankAccountNumber; // Bank account number
+    @Pattern(regexp = "^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$", message = "Invalid bank account number format")
+    private String bankAccountNumber;  // Bank account number
 
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
