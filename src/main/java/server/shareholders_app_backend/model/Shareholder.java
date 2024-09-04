@@ -30,7 +30,11 @@ public class Shareholder {
     private String name; // Shareholder's name
 
     @NotEmpty(message = "Personal ID or Company ID cannot be empty")
-    private String personalIdOrCompanyId; // Personal ID or Company ID
+    // @Pattern(regexp =
+    // "^(?:[0-3][0-9][0-1][0-9][0-9][0-9][-+A-Y][02468][0-9]{2}[0-9A-Y]|\\d{7}-\\d)$",
+    // message = "Invalid Personal ID or Company ID format")
+    @Pattern(regexp = "^(\\d{2})(0[1-9]|1[0-2])(\\d{2})([-+A](?:\\d{3}[0-9A-Y]))$|^(\\d{7})-(\\d)$", message = "Invalid personal identity code or business ID format")
+    private String personalIdOrCompanyId;
 
     @NotEmpty(message = "Place of residence or headquarters cannot be empty")
     private String placeOfResidenceOrHeadquarters; // Place of residence or headquarters
