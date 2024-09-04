@@ -1,10 +1,14 @@
 package server.shareholders_app_backend.controller;
 
 import server.shareholders_app_backend.model.Shareholder;
+import server.shareholders_app_backend.model.ShareRange;
+import server.shareholders_app_backend.service.ShareRangeService;
 import server.shareholders_app_backend.service.ShareholderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.persistence.NoResultException;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +19,9 @@ public class ShareholderController {
 
     @Autowired
     private ShareholderService shareholderService;
+
+    @Autowired
+    private ShareRangeService shareRangeService;
 
     @GetMapping
     public List<Shareholder> getAllShareholders() {
@@ -41,6 +48,18 @@ public class ShareholderController {
     public ResponseEntity<Void> deleteShareholder(@PathVariable Long id) {
         shareholderService.deleteShareholder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{shareholderId}/addShareRange")
+    public ResponseEntity<ShareRange> addShareRange(@PathVariable Long shareholderId, @RequestParam int quantity) {
+        try {
+            ShareRange newShareRange = shareRangeService.addShareRange(shareholderId, quantity);
+            return ResponseEntity.ok(newShareRange);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (NoResultException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/test")
