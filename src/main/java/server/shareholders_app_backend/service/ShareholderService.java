@@ -41,6 +41,20 @@ public class ShareholderService {
         }
         return Optional.empty();
     }
+    public Shareholder updateShareholder(Long id, Shareholder updatedShareholder) {
+        return shareholderRepository.findById(id)
+                .map(shareholder -> {
+                    shareholder.setName(updatedShareholder.getName());
+                    shareholder.setPersonalIdOrCompanyId(updatedShareholder.getPersonalIdOrCompanyId());
+                    shareholder.setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
+                    shareholder.setAddress(updatedShareholder.getAddress());
+                    shareholder.setEmailAddress(updatedShareholder.getEmailAddress());
+                    shareholder.setPhoneNumber(updatedShareholder.getPhoneNumber());
+                    shareholder.setBankAccountNumber(updatedShareholder.getBankAccountNumber());
+                    return shareholderRepository.save(shareholder);
+                })
+                .orElseThrow(() -> new NoSuchElementException("Shareholder not found with id " + id));
+    }
 
     public Shareholder saveShareholder(Shareholder shareholder) {
         if (shareholderRepository.existsByPersonalIdOrCompanyId(shareholder.getPersonalIdOrCompanyId())) {
