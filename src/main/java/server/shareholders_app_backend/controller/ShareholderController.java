@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.persistence.NoResultException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -58,6 +59,15 @@ public class ShareholderController {
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
         } catch (NoResultException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+     @PutMapping("/{id}")
+    public ResponseEntity<Shareholder> updateShareholder(@PathVariable Long id, @RequestBody Shareholder updatedShareholder) {
+        try {
+            Shareholder shareholder = shareholderService.updateShareholder(id, updatedShareholder);
+            return ResponseEntity.ok(shareholder);
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
     }
