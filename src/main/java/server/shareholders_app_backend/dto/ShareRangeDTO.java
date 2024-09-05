@@ -1,6 +1,5 @@
 package server.shareholders_app_backend.dto;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import server.shareholders_app_backend.model.ShareRange;
