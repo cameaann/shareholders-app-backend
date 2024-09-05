@@ -43,6 +43,9 @@ public class ShareholderService {
     }
 
     public Shareholder saveShareholder(Shareholder shareholder) {
+        if (shareholderRepository.existsByPersonalIdOrCompanyId(shareholder.getPersonalIdOrCompanyId())) {
+            throw new IllegalArgumentException("ID already exists in the database");
+        }
         return shareholderRepository.save(shareholder);
     }
 
