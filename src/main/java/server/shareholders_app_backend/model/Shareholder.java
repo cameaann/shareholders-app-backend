@@ -27,7 +27,9 @@ public class Shareholder {
     private Long id;
 
     @NotEmpty(message = "Name cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters and spaces")
     private String name; // Shareholder's name
+
 
     @NotEmpty(message = "Personal ID or Company ID cannot be empty")
     // @Pattern(regexp =
@@ -37,10 +39,13 @@ public class Shareholder {
     private String personalIdOrCompanyId;
 
     @NotEmpty(message = "Place of residence or headquarters cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s,.'-]{3,}$", message = "Invalid place of residence or headquarters format")
     private String placeOfResidenceOrHeadquarters; // Place of residence or headquarters
 
     @NotEmpty(message = "Address cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s,.'-]{3,}$", message = "Invalid address format")
     private String address; // Shareholder's address
+
 
     @NotEmpty(message = "Email address cannot be empty")
     @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email format or missing dot in domain")
@@ -51,7 +56,8 @@ public class Shareholder {
     private String phoneNumber; // Shareholder's phone number
 
     @NotEmpty(message = "Bank account number cannot be empty")
-    private String bankAccountNumber; // Bank account number
+    @Pattern(regexp = "^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$", message = "Invalid bank account number format")
+    private String bankAccountNumber;  // Bank account number
 
     @OneToMany(mappedBy = "shareholder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
