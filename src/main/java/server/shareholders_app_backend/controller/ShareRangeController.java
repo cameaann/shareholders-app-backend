@@ -1,6 +1,6 @@
 package server.shareholders_app_backend.controller;
 
-import server.shareholders_app_backend.dto.ShareRangeDto;
+import server.shareholders_app_backend.dto.ShareRangeDTO;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.service.ShareRangeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class ShareRangeController {
     private ShareRangeService shareService;
 
     @GetMapping
-    public List<ShareRange> getAllShares() {
+    public List<ShareRangeDTO> getAllShares() {
         return shareService.getAllShares();
     }
 
@@ -30,11 +30,11 @@ public class ShareRangeController {
     }
 
     @PostMapping
-    public ResponseEntity<ShareRange> createShare(@RequestBody ShareRangeDto shareRangeDto) {
+    public ResponseEntity<ShareRange> createShare(@RequestBody ShareRangeDTO shareRangeDTO) {
         try {
             ShareRange createdShareRange = shareService.addShareRange(
-                    shareRangeDto.getShareholderId(),
-                    shareRangeDto.getQuantity());
+                    shareRangeDTO.getShareholderId(),
+                    shareRangeDTO.getQuantity());
             return ResponseEntity.ok(createdShareRange);
         } catch (IllegalStateException | NoSuchElementException e) {
             return ResponseEntity.badRequest().body(null);

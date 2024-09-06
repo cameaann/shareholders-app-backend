@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import server.shareholders_app_backend.dto.ShareRangeDTO;
 
 @Service
 public class ShareRangeService {
@@ -22,8 +24,11 @@ public class ShareRangeService {
     @Autowired
     private ShareholderRepository shareholderRepository;
 
-    public List<ShareRange> getAllShares() {
-        return shareRepository.findAll();
+    public List<ShareRangeDTO> getAllShares() {
+        return shareRepository.findAll()
+                .stream()
+                .map(ShareRangeDTO::new)
+                .collect(Collectors.toList());
     }
 
     public Optional<ShareRange> getShareById(Long id) {
