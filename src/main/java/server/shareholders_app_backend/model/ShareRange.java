@@ -32,6 +32,4 @@ public class ShareRange {
     @JoinColumn(name = "shareholder_id", nullable = false)
     @JsonBackReference
     private Shareholder shareholder;
-
-    // No need for @PostLoad if not calculating quantity directly
 }
