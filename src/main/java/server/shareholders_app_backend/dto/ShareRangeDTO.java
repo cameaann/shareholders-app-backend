@@ -13,12 +13,16 @@ public class ShareRangeDTO {
     private int endNumber;
     private Long shareholderId;
 
-    // Constructor
+    // Конструктор для создания DTO из модели ShareRange
     public ShareRangeDTO(ShareRange shareRange) {
         this.id = shareRange.getId();
         this.quantity = shareRange.getQuantity();
         this.startNumber = shareRange.getStartNumber();
         this.endNumber = shareRange.getEndNumber();
         this.shareholderId = shareRange.getShareholder() != null ? shareRange.getShareholder().getId() : null;
+    }
+
+    // Пустой конструктор для десериализации JSON
+    public ShareRangeDTO() {
     }
 }

@@ -1,7 +1,7 @@
 package server.shareholders_app_backend.service;
 
-import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.model.ShareRange;
+import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.repository.ShareholderRepository;
 import server.shareholders_app_backend.exception.ShareholderDeletionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +39,7 @@ public class ShareholderService {
                 .map(shareholder -> {
                     shareholder.setName(updatedShareholder.getName());
                     shareholder.setPersonalIdOrCompanyId(updatedShareholder.getPersonalIdOrCompanyId());
-                    shareholder
-                            .setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
+                    shareholder.setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
                     shareholder.setAddress(updatedShareholder.getAddress());
                     shareholder.setEmailAddress(updatedShareholder.getEmailAddress());
                     shareholder.setPhoneNumber(updatedShareholder.getPhoneNumber());

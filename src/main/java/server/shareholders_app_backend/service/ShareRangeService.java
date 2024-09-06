@@ -1,6 +1,7 @@
 package server.shareholders_app_backend.service;
 
-import server.shareholders_app_backend.config.ApplicationConstants;
+import server.shareholders_app_backend.dto.ShareRangeDTO;
+import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.repository.ShareRangeRepository;
@@ -10,10 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import server.shareholders_app_backend.dto.ShareRangeDTO;
 
 @Service
 public class ShareRangeService {
@@ -23,6 +23,47 @@ public class ShareRangeService {
 
     @Autowired
     private ShareholderRepository shareholderRepository;
+
+    @Transactional
+    public void transferShares(TransferRequestDto transferRequest) {
+        Shareholder fromShareholder = shareholderRepository.findById(transferRequest.getFromShareholderId())
+                .orElseThrow(() -> new NoSuchElementException("Shareholder not found"));
+
+        Shareholder toShareholder = shareholderRepository.findById(transferRequest.getToShareholderId())
+                .orElseThrow(() -> new NoSuchElementException("Shareholder not found"));
+
+        int quantityToTransfer = transferRequest.getQuantity();
+        int remainingQuantity = quantityToTransfer;
+
+        for (ShareRange shareRange : fromShareholder.getShares()) {
+            if (remainingQuantity <= 0) break;
+
+            int availableQuantity = shareRange.getQuantity();
+            if (availableQuantity <= remainingQuantity) {
+                remainingQuantity -= availableQuantity;
+                shareRange.setShareholder(toShareholder);
+                shareRepository.save(shareRange);
+            } else {
+                int newStartNumber = shareRange.getStartNumber() + remainingQuantity;
+                ShareRange newShareRange = new ShareRange();
+                newShareRange.setQuantity(remainingQuantity);
+                newShareRange.setStartNumber(shareRange.getStartNumber());
+                newShareRange.setEndNumber(newStartNumber - 1);
+                newShareRange.setShareholder(toShareholder);
+
+                shareRange.setQuantity(availableQuantity - remainingQuantity);
+                shareRange.setStartNumber(newStartNumber);
+
+                shareRepository.save(newShareRange);
+                shareRepository.save(shareRange);
+                remainingQuantity = 0;
+            }
+        }
+
+        if (remainingQuantity > 0) {
+            throw new IllegalStateException("Not enough shares to transfer");
+        }
+    }
 
     public List<ShareRangeDTO> getAllShares() {
         return shareRepository.findAll()
@@ -37,11 +78,9 @@ public class ShareRangeService {
 
     @Transactional
     public ShareRange addShareRange(Long shareholderId, int quantity) {
-        // Find the shareholder by ID
         Shareholder shareholder = shareholderRepository.findById(shareholderId)
                 .orElseThrow(() -> new NoSuchElementException("Shareholder not found"));
 
-        // Calculate start_number and end_number
         Integer currentMaxEndNumber = shareRepository.findMaxEndNumber();
         if (currentMaxEndNumber == null) {
             currentMaxEndNumber = 0;
@@ -50,11 +89,6 @@ public class ShareRangeService {
         int startNumber = currentMaxEndNumber + 1;
         int endNumber = startNumber + quantity - 1;
 
-        if (endNumber > ApplicationConstants.TOTAL_SHARES_IN_COMPANY) {
-            throw new IllegalStateException("Not enough shares available");
-        }
-
-        // Create a new ShareRange instance with calculated values
         ShareRange shareRange = new ShareRange();
         shareRange.setQuantity(quantity);
         shareRange.setStartNumber(startNumber);
