@@ -1,14 +1,17 @@
 package server.shareholders_app_backend.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import server.shareholders_app_backend.dto.ShareRangeDTO;
 import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.model.Shareholder;
+import server.shareholders_app_backend.model.ShareTransferHistory;
 import server.shareholders_app_backend.repository.ShareRangeRepository;
 import server.shareholders_app_backend.repository.ShareholderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import server.shareholders_app_backend.repository.ShareTransferHistoryRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,6 +26,9 @@ public class ShareRangeService {
 
     @Autowired
     private ShareholderRepository shareholderRepository;
+
+    @Autowired
+    private ShareTransferHistoryRepository historyRepository;
 
     @Transactional
     public void transferShares(TransferRequestDto transferRequest) {
@@ -70,8 +76,30 @@ public class ShareRangeService {
         if (remainingQuantity > 0) {
             throw new IllegalStateException("Not enough shares to transfer.");
         }
+
+        // Save transfer history
+        ShareTransferHistory history = new ShareTransferHistory();
+        history.setFromShareholderId(transferRequest.getFromShareholderId());
+        history.setToShareholderId(transferRequest.getToShareholderId());
+        history.setQuantity(transferRequest.getQuantity());
+        history.setTransferDate(transferRequest.getTransferDate()); // Ensure this is set
+        history.setPaymentDate(transferRequest.getPaymentDate()); // Optional
+        history.setTransferTax(transferRequest.isTransferTax());
+
+        // Use a default value if pricePerShare is null
+        double pricePerShare = (transferRequest.getPricePerShare() != null) ? transferRequest.getPricePerShare() : 0.0;
+        history.setPricePerShare(pricePerShare); // Optional
+
+        // Calculate the total amount as quantity * pricePerShare
+        double totalAmount = pricePerShare * transferRequest.getQuantity();
+        history.setTotalAmount(totalAmount);
+
+        history.setAdditionalNotes(transferRequest.getAdditionalNotes()); // Optional
+
+        historyRepository.save(history);
     }
 
+    // Add this method to get all shares
     public List<ShareRangeDTO> getAllShares() {
         return shareRepository.findAllOrderedByStartNumber()
                 .stream()
