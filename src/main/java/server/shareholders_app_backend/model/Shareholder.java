@@ -27,7 +27,7 @@ public class Shareholder {
     private Long id;
 
     @NotEmpty(message = "Name cannot be empty")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters and spaces")
+    @Pattern(regexp = "^[a-zA-ZäöåÄÖÅ\\s]+$", message = "Name can only contain letters, spaces, and Finnish characters (ä, ö, å)")
     @Size(max = 100, message = "Name cannot exceed 100 characters")
     private String name;
 
@@ -37,12 +37,12 @@ public class Shareholder {
     private String personalIdOrCompanyId;
 
     @NotEmpty(message = "Place of residence or headquarters cannot be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s,.'-]+$", message = "Invalid place of residence or headquarters format")
+    @Pattern(regexp = "^[a-zA-ZäöåÄÖÅ0-9\\s,.'-]+$", message = "Invalid place of residence or headquarters format. Allows letters, numbers, spaces, and Finnish characters (ä, ö, å)")
     @Size(max = 150, message = "Place of residence or headquarters cannot exceed 150 characters")
     private String placeOfResidenceOrHeadquarters;
 
     @NotEmpty(message = "Address cannot be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s,.'-]+$", message = "Invalid address format")
+    @Pattern(regexp = "^[a-zA-ZäöåÄÖÅ0-9\\s,.'-]+$", message = "Invalid address format. Allows letters, numbers, spaces, and Finnish characters (ä, ö, å)")
     @Size(max = 150, message = "Address cannot exceed 150 characters")
     private String address;
 
