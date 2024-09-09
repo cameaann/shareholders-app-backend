@@ -5,6 +5,7 @@ import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.service.ShareRangeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,35 +21,42 @@ public class ShareRangeController {
     private ShareRangeService shareRangeService;
 
     @GetMapping
-    public List<ShareRangeDTO> getAllShares() {
-        return shareRangeService.getAllShares();
+    public ResponseEntity<List<ShareRangeDTO>> getAllShares() {
+        List<ShareRangeDTO> shares = shareRangeService.getAllShares();
+        return ResponseEntity.ok(shares);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShareRange> getShareById(@PathVariable Long id) {
+    public ResponseEntity<ShareRangeDTO> getShareById(@PathVariable Long id) {
         Optional<ShareRange> share = shareRangeService.getShareById(id);
-        return share.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return share.map(shareRange -> ResponseEntity.ok(new ShareRangeDTO(shareRange)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ShareRange> createShare(@RequestBody ShareRangeDTO shareRangeDTO) {
+    public ResponseEntity<ShareRangeDTO> createShare(@RequestBody ShareRangeDTO shareRangeDTO) {
         try {
             ShareRange createdShareRange = shareRangeService.addShareRange(
                     shareRangeDTO.getShareholderId(),
                     shareRangeDTO.getQuantity());
-            return ResponseEntity.ok(createdShareRange);
-        } catch (IllegalStateException | NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ShareRangeDTO(createdShareRange));
+        } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<Void> transferShares(@RequestBody TransferRequestDto transferRequest) {
+    public ResponseEntity<String> transferShares(@RequestBody TransferRequestDto transferRequest) {
         try {
             shareRangeService.transferShares(transferRequest);
-            return ResponseEntity.ok().build();
-        } catch (IllegalStateException | NoSuchElementException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok("Shares transferred successfully.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 

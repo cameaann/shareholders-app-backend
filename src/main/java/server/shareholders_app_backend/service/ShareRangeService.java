@@ -27,46 +27,53 @@ public class ShareRangeService {
     @Transactional
     public void transferShares(TransferRequestDto transferRequest) {
         Shareholder fromShareholder = shareholderRepository.findById(transferRequest.getFromShareholderId())
-                .orElseThrow(() -> new NoSuchElementException("Shareholder not found"));
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Shareholder with ID " + transferRequest.getFromShareholderId() + " not found"));
 
         Shareholder toShareholder = shareholderRepository.findById(transferRequest.getToShareholderId())
-                .orElseThrow(() -> new NoSuchElementException("Shareholder not found"));
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Shareholder with ID " + transferRequest.getToShareholderId() + " not found"));
 
         int quantityToTransfer = transferRequest.getQuantity();
         int remainingQuantity = quantityToTransfer;
 
-        for (ShareRange shareRange : fromShareholder.getShares()) {
-            if (remainingQuantity <= 0) break;
+        // Retrieve and sort share ranges by startNumber
+        List<ShareRange> shareRanges = shareRepository.findAllOrderedByStartNumber();
+        for (ShareRange shareRange : shareRanges) {
+            if (shareRange.getShareholder().equals(fromShareholder)) {
+                if (remainingQuantity <= 0)
+                    break;
 
-            int availableQuantity = shareRange.getQuantity();
-            if (availableQuantity <= remainingQuantity) {
-                remainingQuantity -= availableQuantity;
-                shareRange.setShareholder(toShareholder);
-                shareRepository.save(shareRange);
-            } else {
-                int newStartNumber = shareRange.getStartNumber() + remainingQuantity;
-                ShareRange newShareRange = new ShareRange();
-                newShareRange.setQuantity(remainingQuantity);
-                newShareRange.setStartNumber(shareRange.getStartNumber());
-                newShareRange.setEndNumber(newStartNumber - 1);
-                newShareRange.setShareholder(toShareholder);
+                int availableQuantity = shareRange.getQuantity();
+                if (availableQuantity <= remainingQuantity) {
+                    remainingQuantity -= availableQuantity;
+                    shareRange.setShareholder(toShareholder);
+                    shareRepository.save(shareRange);
+                } else {
+                    int newStartNumber = shareRange.getStartNumber() + remainingQuantity;
+                    ShareRange newShareRange = new ShareRange();
+                    newShareRange.setQuantity(remainingQuantity);
+                    newShareRange.setStartNumber(shareRange.getStartNumber());
+                    newShareRange.setEndNumber(newStartNumber - 1);
+                    newShareRange.setShareholder(toShareholder);
 
-                shareRange.setQuantity(availableQuantity - remainingQuantity);
-                shareRange.setStartNumber(newStartNumber);
+                    shareRange.setQuantity(availableQuantity - remainingQuantity);
+                    shareRange.setStartNumber(newStartNumber);
 
-                shareRepository.save(newShareRange);
-                shareRepository.save(shareRange);
-                remainingQuantity = 0;
+                    shareRepository.save(newShareRange);
+                    shareRepository.save(shareRange);
+                    remainingQuantity = 0;
+                }
             }
         }
 
         if (remainingQuantity > 0) {
-            throw new IllegalStateException("Not enough shares to transfer");
+            throw new IllegalStateException("Not enough shares to transfer.");
         }
     }
 
     public List<ShareRangeDTO> getAllShares() {
-        return shareRepository.findAll()
+        return shareRepository.findAllOrderedByStartNumber()
                 .stream()
                 .map(ShareRangeDTO::new)
                 .collect(Collectors.toList());
@@ -79,7 +86,7 @@ public class ShareRangeService {
     @Transactional
     public ShareRange addShareRange(Long shareholderId, int quantity) {
         Shareholder shareholder = shareholderRepository.findById(shareholderId)
-                .orElseThrow(() -> new NoSuchElementException("Shareholder not found"));
+                .orElseThrow(() -> new NoSuchElementException("Shareholder with ID " + shareholderId + " not found"));
 
         Integer currentMaxEndNumber = shareRepository.findMaxEndNumber();
         if (currentMaxEndNumber == null) {
@@ -98,6 +105,7 @@ public class ShareRangeService {
         return shareRepository.save(shareRange);
     }
 
+    @Transactional
     public void deleteShare(Long id) {
         if (shareRepository.existsById(id)) {
             shareRepository.deleteById(id);
