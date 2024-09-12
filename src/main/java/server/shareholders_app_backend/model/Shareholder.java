@@ -84,4 +84,8 @@ public class Shareholder {
         DecimalFormat df = new DecimalFormat("0.0000");
         ownershipPercentage = df.format(percentage) + "%";
     }
+
+    public Integer getTotalShares() {
+        return totalShares;
+    }
 }
