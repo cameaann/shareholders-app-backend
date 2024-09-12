@@ -22,7 +22,7 @@ public class TransferRequestDto {
     @NotNull(message = "Transfer Date is required")
     private LocalDate transferDate; // Transfer Date (Saantopäivä)
 
-    private String paymentDate; // Payment Date or Code (Maksupvm), optional
+    private LocalDate paymentDate; // Payment Date (Maksupvm), optional
     private boolean transferTax; // Transfer Tax (Varainsiirtovero)
     private Double pricePerShare; // Price per Share (Hinta per osake), optional
     private String additionalNotes; // Additional Notes (Huom.), optional
