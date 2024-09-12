@@ -1,5 +1,7 @@
 package server.shareholders_app_backend.controller;
 
+import server.shareholders_app_backend.dto.ShareRangeDTO;
+import server.shareholders_app_backend.dto.ShareholderWithSharesDTO;
 import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.service.ShareholderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,9 @@ public class ShareholderController {
     }
 
     @PostMapping
-    public ResponseEntity<Shareholder> createShareholder(@RequestBody Shareholder shareholder) {
+    public ResponseEntity<Shareholder> createShareholderWithShares(@RequestBody ShareholderWithSharesDTO dto) {
         try {
-            Shareholder createdShareholder = shareholderService.saveShareholder(shareholder);
+            Shareholder createdShareholder = shareholderService.saveShareholderWithShares(dto);
             return ResponseEntity.ok(createdShareholder);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);

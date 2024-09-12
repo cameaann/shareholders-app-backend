@@ -1,5 +1,7 @@
 package server.shareholders_app_backend.service;
 
+import server.shareholders_app_backend.dto.ShareRangeDTO;
+import server.shareholders_app_backend.dto.ShareholderWithSharesDTO;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.model.Shareholder;
 import server.shareholders_app_backend.repository.ShareholderRepository;
@@ -8,12 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ShareholderService {
 
     @Autowired
     private ShareholderRepository shareholderRepository;
+
+    @Autowired
+    private ShareRangeService shareRangeService;
 
     public List<Shareholder> getAllShareholders() {
         return shareholderRepository.findAll();
@@ -39,7 +46,8 @@ public class ShareholderService {
                 .map(shareholder -> {
                     shareholder.setName(updatedShareholder.getName());
                     shareholder.setPersonalIdOrCompanyId(updatedShareholder.getPersonalIdOrCompanyId());
-                    shareholder.setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
+                    shareholder
+                            .setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
                     shareholder.setAddress(updatedShareholder.getAddress());
                     shareholder.setEmailAddress(updatedShareholder.getEmailAddress());
                     shareholder.setPhoneNumber(updatedShareholder.getPhoneNumber());
@@ -49,11 +57,24 @@ public class ShareholderService {
                 .orElseThrow(() -> new NoSuchElementException("Shareholder not found with id " + id));
     }
 
-    public Shareholder saveShareholder(Shareholder shareholder) {
+    public Shareholder saveShareholderWithShares(ShareholderWithSharesDTO dto) {
+        Shareholder shareholder = dto.getShareholder();
+
         if (shareholderRepository.existsByPersonalIdOrCompanyId(shareholder.getPersonalIdOrCompanyId())) {
             throw new IllegalArgumentException("ID already exists in the database");
         }
-        return shareholderRepository.save(shareholder);
+
+        // Save the shareholder first
+        Shareholder savedShareholder = shareholderRepository.save(shareholder);
+
+        // Handle shares if present
+        if (dto.getShares() != null) {
+            for (ShareRangeDTO shareRangeDTO : dto.getShares()) {
+                shareRangeService.addShareRange(savedShareholder.getId(), shareRangeDTO.getQuantity());
+            }
+        }
+
+        return savedShareholder;
     }
 
     public void deleteShareholder(Long id) {
