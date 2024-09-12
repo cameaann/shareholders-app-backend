@@ -27,7 +27,7 @@ public class ShareTransferHistory {
     private LocalDate transferDate;
 
     @Column
-    private String paymentDate;
+    private LocalDate paymentDate;
 
     @Column
     private boolean transferTax;
