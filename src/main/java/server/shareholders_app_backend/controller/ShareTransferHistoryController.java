@@ -7,6 +7,7 @@ import server.shareholders_app_backend.model.ShareTransferHistory;
 import server.shareholders_app_backend.service.ShareTransferHistoryService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transfer-history")
@@ -19,6 +20,13 @@ public class ShareTransferHistoryController {
     public ResponseEntity<List<ShareTransferHistory>> getAllTransferHistories() {
         List<ShareTransferHistory> transferHistories = shareTransferHistoryService.getAllTransferHistories();
         return ResponseEntity.ok(transferHistories);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ShareTransferHistory> getTransferHistoryById(@PathVariable Long id) {
+        Optional<ShareTransferHistory> transferHistory = shareTransferHistoryService.getTransferHistoryById(id);
+        return transferHistory.map(ResponseEntity::ok)
+                              .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
