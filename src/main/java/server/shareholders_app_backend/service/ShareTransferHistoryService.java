@@ -6,6 +6,7 @@ import server.shareholders_app_backend.model.ShareTransferHistory;
 import server.shareholders_app_backend.repository.ShareTransferHistoryRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShareTransferHistoryService {
@@ -15,6 +16,10 @@ public class ShareTransferHistoryService {
 
     public List<ShareTransferHistory> getAllTransferHistories() {
         return shareTransferHistoryRepository.findAll();
+    }
+
+    public Optional<ShareTransferHistory> getTransferHistoryById(Long id) {
+        return shareTransferHistoryRepository.findById(id);
     }
 
     public ShareTransferHistory saveTransferHistory(ShareTransferHistory transferHistory) {
