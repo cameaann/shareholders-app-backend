@@ -43,6 +43,18 @@ public class ShareholderController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Shareholder> updateShareholder(@PathVariable Long id, @RequestBody Shareholder updatedShareholder) {
+        try {
+            Shareholder shareholder = shareholderService.updateShareholder(id, updatedShareholder);
+            return ResponseEntity.ok(shareholder);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteShareholder(@PathVariable Long id) {
         try {
