@@ -67,10 +67,8 @@ public class ShareholderService {
         Shareholder savedShareholder = shareholderRepository.save(shareholder);
 
         // Handle shares if present
-        if (dto.getShares() != null) {
-            for (ShareRangeDTO shareRangeDTO : dto.getShares()) {
-                shareRangeService.addShareRange(savedShareholder.getId(), shareRangeDTO.getQuantity());
-            }
+        if (dto.getShares() > 0) {
+                shareRangeService.addShareRange(savedShareholder.getId(), dto.getShares());
         }
 
         return savedShareholder;

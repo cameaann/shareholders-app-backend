@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class ShareholderWithSharesDTO {
     private Shareholder shareholder;
-    private Set<ShareRangeDTO> shares;
+    private Integer shares;
 
     // Getters and setters
     public Shareholder getShareholder() {
@@ -17,11 +17,12 @@ public class ShareholderWithSharesDTO {
         this.shareholder = shareholder;
     }
 
-    public Set<ShareRangeDTO> getShares() {
+    public void setShares(Integer shares) {
+        this.shares = shares;
+    }
+
+    public int getShares() {
         return shares;
     }
 
-    public void setShares(Set<ShareRangeDTO> shares) {
-        this.shares = shares;
-    }
 }
