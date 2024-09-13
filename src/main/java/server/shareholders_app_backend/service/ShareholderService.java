@@ -46,8 +46,7 @@ public class ShareholderService {
                 .map(shareholder -> {
                     shareholder.setName(updatedShareholder.getName());
                     shareholder.setPersonalIdOrCompanyId(updatedShareholder.getPersonalIdOrCompanyId());
-                    shareholder
-                            .setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
+                    shareholder.setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
                     shareholder.setAddress(updatedShareholder.getAddress());
                     shareholder.setEmailAddress(updatedShareholder.getEmailAddress());
                     shareholder.setPhoneNumber(updatedShareholder.getPhoneNumber());
