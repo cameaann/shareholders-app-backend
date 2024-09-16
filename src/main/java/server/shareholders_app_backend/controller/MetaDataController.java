@@ -24,10 +24,10 @@ public class MetaDataController {
     public ResponseEntity<?> getMetaData() {
         Optional<Shareholder> mainCompany = shareholderService.getShareholderById(1L);
         if (mainCompany.isPresent()) {
-        MetadataDTO response = new MetadataDTO(mainCompany.get().getTotalShares());
+            MetadataDTO response = new MetadataDTO(mainCompany.get().getTotalShares());
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shareholder not found");
+            return ResponseEntity.ok(new MetadataDTO(0));
         }
     }
 
