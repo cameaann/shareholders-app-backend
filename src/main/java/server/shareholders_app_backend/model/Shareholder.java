@@ -27,7 +27,7 @@ public class Shareholder {
     private Long id;
 
     @NotEmpty(message = "Name cannot be empty")
-    @Pattern(regexp = "^[a-zA-ZäöåÄÖÅ\\s]+$", message = "Name can only contain letters, spaces, and Finnish characters (ä, ö, å)")
+    @Pattern(regexp = "^[a-zA-ZäöåÄÖÅ\\s']+$", message = "Name can only contain letters, spaces, apostrophes, and Finnish characters (ä, ö, å)")
     @Size(max = 100, message = "Name cannot exceed 100 characters")
     private String name;
 
