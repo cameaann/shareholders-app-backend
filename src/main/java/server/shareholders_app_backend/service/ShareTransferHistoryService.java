@@ -25,4 +25,20 @@ public class ShareTransferHistoryService {
     public ShareTransferHistory saveTransferHistory(ShareTransferHistory transferHistory) {
         return shareTransferHistoryRepository.save(transferHistory);
     }
+
+    public ShareTransferHistory updateTransferHistory(Long id, ShareTransferHistory updatedTransferHistory) {
+        return shareTransferHistoryRepository.findById(id)
+                .map(existingTransferHistory -> {
+                    existingTransferHistory.setFromShareholderId(updatedTransferHistory.getFromShareholderId());
+                    existingTransferHistory.setToShareholderId(updatedTransferHistory.getToShareholderId());
+                    existingTransferHistory.setQuantity(updatedTransferHistory.getQuantity());
+                    existingTransferHistory.setTransferDate(updatedTransferHistory.getTransferDate());
+                    existingTransferHistory.setPaymentDate(updatedTransferHistory.getPaymentDate());
+                    existingTransferHistory.setTransferTax(updatedTransferHistory.isTransferTax());
+                    existingTransferHistory.setPricePerShare(updatedTransferHistory.getPricePerShare());
+                    existingTransferHistory.setAdditionalNotes(updatedTransferHistory.getAdditionalNotes());
+                    return shareTransferHistoryRepository.save(existingTransferHistory);
+                })
+                .orElseThrow(() -> new RuntimeException("Transfer history not found with id " + id));
+    }
 }
