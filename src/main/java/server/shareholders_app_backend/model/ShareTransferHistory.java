@@ -1,7 +1,6 @@
 package server.shareholders_app_backend.model;
 
 import lombok.Data;
-
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
