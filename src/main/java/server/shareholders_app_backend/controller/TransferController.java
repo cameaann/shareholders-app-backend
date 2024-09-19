@@ -1,15 +1,14 @@
 package server.shareholders_app_backend.controller;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.service.EmailService;
 import server.shareholders_app_backend.service.PdfGeneratorService;
 import server.shareholders_app_backend.service.TransferService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/transfer")
@@ -28,7 +27,7 @@ public class TransferController {
     private EmailService emailService;
 
     @PostMapping
-    public TransferRequestDto handleTransfer(@RequestBody TransferRequestDto transferRequestDto) {
+    public TransferRequestDto handleTransfer(@RequestBody TransferRequestDto transferRequestDto) throws IOException {
         TransferRequestDto populatedDto = transferService.populateShareholderDetails(transferRequestDto);
 
         byte[] pdf = pdfGeneratorService.generateTransferPdf(populatedDto.getAdditionalNotes());
@@ -43,6 +42,6 @@ public class TransferController {
         }
 
         rabbitTemplate.convertAndSend("transferQueue", populatedDto);
-        return populatedDto; // Return the populated DTO
+        return populatedDto;
     }
 }

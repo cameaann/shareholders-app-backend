@@ -1,5 +1,7 @@
 package server.shareholders_app_backend.service;
 
+import java.io.IOException;
+
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,7 @@ public class TransferListener {
     private EmailService emailService;
 
     @RabbitListener(queues = "transferQueue")
-    public void handleTransfer(TransferRequestDto transferRequestDto) throws MessagingException {
+    public void handleTransfer(TransferRequestDto transferRequestDto) throws MessagingException, IOException {
         byte[] pdf = pdfGeneratorService.generateTransferPdf(transferRequestDto.getAdditionalNotes());
         String paymentUrl = "https://example.com/confirm-payment"; // URL для оплаты
         String emailContent = emailService.generateEmailContentWithButton(paymentUrl, transferRequestDto.getToShareholderId().toString());
