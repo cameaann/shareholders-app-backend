@@ -94,8 +94,8 @@
         <!-- PDF Generation Dependency -->
         <dependency>
             <groupId>com.itextpdf</groupId>
-            <artifactId>itext-core</artifactId>
-            <version>8.0.4</version> <!-- Используем версию 8.0.4 -->
+            <artifactId>itext7-core</artifactId>
+            <version>8.0.0</version> <!-- Используем версию 8.0.0 -->
         </dependency>
     </dependencies>
 
