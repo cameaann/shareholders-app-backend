@@ -3,7 +3,9 @@ package server.shareholders_app_backend.controller;
 import server.shareholders_app_backend.dto.ShareRangeDTO;
 import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.model.ShareRange;
+import server.shareholders_app_backend.model.ShareTransferHistory;
 import server.shareholders_app_backend.service.ShareRangeService;
+import server.shareholders_app_backend.service.ShareTransferHistoryService; // Import the service
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ public class ShareRangeController {
 
     @Autowired
     private ShareRangeService shareRangeService;
+
+    @Autowired
+    private ShareTransferHistoryService shareTransferHistoryService; // Inject the service
 
     @GetMapping
     public ResponseEntity<List<ShareRangeDTO>> getAllShares() {
@@ -49,12 +54,13 @@ public class ShareRangeController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<String> transferShares(@RequestBody TransferRequestDto transferRequest) {
+    public ResponseEntity<List<ShareTransferHistory>> transferShares(@RequestBody TransferRequestDto transferRequest) {
         try {
             shareRangeService.transferShares(transferRequest);
-            return ResponseEntity.ok("Shares transferred successfully.");
+            List<ShareTransferHistory> history = shareTransferHistoryService.getAllTransferHistories();
+            return ResponseEntity.ok(history);
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(null);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
