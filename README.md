@@ -12,19 +12,76 @@
 
 ## Sisällysluettelo
 
-1. [Päätoiminnot](#päätoiminnot)
+1. [Entity-Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
+2. [Päätoiminnot](#päätoiminnot)
    - [Osakkeenomistajat](#1-osakkeenomistajat)
    - [Osakkeet](#2-osakkeet)
    - [Siirto](#3-siirto)
    - [Osakehistoria](#4-osakehistoria)
-2. [Validointi](#validointi)
+3. [Validointi](#validointi)
    - [Osakkeenomistajat](#osakkeenomistajat)
    - [Osakkeet](#osakkeet)
    - [Siirto](#siirto)
-3. [Poikkeusten käsittely](#poikkeusten-käsittely)
-4. [Kohderyhmät](#kohderyhmät)
+4. [Poikkeusten käsittely](#poikkeusten-käsittely)
+5. [Kohderyhmät](#kohderyhmät)
 
 ---
+
+# Entity-Relationship Diagram (ERD)
+
+## Entities
+
+### SHAREHOLDER
+
+- **Attributes**:
+  - **ID** (PK) - BIGINT
+  - **ADDRESS** - VARCHAR(150)
+  - **BANK_ACCOUNT_NUMBER** - VARCHAR(34)
+  - **EMAIL_ADDRESS** - VARCHAR(100)
+  - **NAME** - VARCHAR(100)
+  - **PERSONAL_ID_OR_COMPANY_ID** - VARCHAR(14)
+  - **PHONE_NUMBER** - VARCHAR(20)
+  - **PLACE_OF_RESIDENCE_OR_HEADQUARTERS** - VARCHAR(150)
+
+---
+
+### SHARE_RANGE
+
+- **Attributes**:
+  - **ID** (PK) - BIGINT
+  - **END_NUMBER** - INTEGER
+  - **QUANTITY** - INTEGER
+  - **START_NUMBER** - INTEGER
+  - **SHAREHOLDER_ID** (FK) - BIGINT [references SHAREHOLDER(ID)]
+
+---
+
+### SHARE_TRANSFER_HISTORY
+
+- **Attributes**:
+  - **ID** (PK) - BIGINT
+  - **ADDITIONAL_NOTES** - VARCHAR(255)
+  - **FROM_SHAREHOLDER_ID** (FK) - BIGINT [references SHAREHOLDER(ID)]
+  - **PAYMENT_DATE** - DATE
+  - **PRICE_PER_SHARE** - DOUBLE
+  - **QUANTITY** - INTEGER
+  - **TO_SHAREHOLDER_ID** (FK) - BIGINT [references SHAREHOLDER(ID)]
+  - **TOTAL_AMOUNT** - DOUBLE
+  - **TRANSFER_DATE** - DATE
+  - **TRANSFER_TAX** - BOOLEAN
+
+---
+
+## Relationships
+
+- **SHAREHOLDER (1) --- (M) SHARE_RANGE**
+  - One SHAREHOLDER can own multiple SHARE_RANGE entries (one-to-many).
+- **SHAREHOLDER (1) --- (M) SHARE_TRANSFER_HISTORY (as Sender)**
+  - One SHAREHOLDER can be involved in multiple SHARE_TRANSFER_HISTORY entries as a sender (FROM_SHAREHOLDER_ID).
+- **SHAREHOLDER (1) --- (M) SHARE_TRANSFER_HISTORY (as Recipient)**
+  - One SHAREHOLDER can be involved in multiple SHARE_TRANSFER_HISTORY entries as a recipient (TO_SHAREHOLDER_ID).
+- **SHARE_RANGE (1) --- (M) SHARE_TRANSFER_HISTORY (optional)**
+  - One SHARE_RANGE can be related to multiple SHARE_TRANSFER_HISTORY entries (one-to-many, optional relationship).
 
 ## Päätoiminnot
 
@@ -62,7 +119,6 @@
 
 - **Luo:** Uuden osakkeen luominen.
 - **Hae:** Olemassa olevien osakkeiden hakeminen.
-- **Päivitä:** Osakkeen tietojen päivittäminen.
 - **Siirrä:** Osakkeiden siirtäminen osakkeenomistajien välillä.
 
 **Osakkeiden tiedot:**
