@@ -13,7 +13,9 @@ import jakarta.persistence.*;
 import java.text.DecimalFormat;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 @Entity
 @Getter
@@ -34,6 +36,7 @@ public class Shareholder {
     @NotEmpty(message = "Personal ID or Company ID cannot be empty")
     @Pattern(regexp = "^(\\d{6}[+-A]\\d{3}[0-9A-Y]|\\d{7}-\\d)$", message = "Invalid personal identity code or business ID format")
     @Size(max = 14, message = "Personal ID or Company ID cannot exceed 14 characters")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String personalIdOrCompanyId;
 
     @NotEmpty(message = "Place of residence or headquarters cannot be empty")
@@ -87,5 +90,14 @@ public class Shareholder {
 
     public Integer getTotalShares() {
         return totalShares;
+    }
+
+    @JsonGetter("personalIdOrCompanyId")
+    public String getMaskedPersonalIdOrCompanyId() {
+        if (personalIdOrCompanyId != null && personalIdOrCompanyId.length() > 4) {
+            int length = personalIdOrCompanyId.length();
+            return personalIdOrCompanyId.substring(0, length - 4) + "****";
+        }
+        return personalIdOrCompanyId;
     }
 }
