@@ -105,7 +105,37 @@ Näiden toimintojen avulla voit toteuttaa tehokasta hallintaa ja muokkaamista os
 
 ### 5. Poikkeusten käsittely
 
-- **Käsittely:** Käyttäjäystävällisten virheilmoitusten tarjoaminen poikkeustilanteissa.
+# Validointi
+
+## Osakkeenomistajat
+
+- Ei tyhjää
+- Kenttien minimimaksimipituudet määritelty `@Size`-annotaatiolla.
+- **Kenttien muoto validoinnit:**
+  1. **Nimi, Osoite, Asuinpaikka:** Merkit: A–Z, a–z, ä, ö, å, numerot, välilyönnit, erikoismerkit (,.'-). Max. 150 merkkiä.
+  2. **Hetu / Y-tunnus:** Muoto "YYMMDD-XXXX" (henkilötunnus) tai "XXXXXXX-X" (y-tunnus). Max. 14 merkkiä.
+  3. **Sähköpostiosoite:** Oikea sähköpostimuoto (esim. käyttäjänimi@domain.com). Max. 100 merkkiä.
+  4. **Puhelinnumero:** Muoto (+358) XX XXX XXX. Max. 20 merkkiä.
+  5. **Pankkitili:** IBAN-tilinumerot EU-standardin mukaan. Max. 34 merkkiä.
+
+## Osakkeet
+
+- **ID ja määrä:**
+  - Positiivisia lukuja, ID ei tyhjää.
+- **Alku- ja loppunumerot:**
+  - Oikeanmuotoiset, loppunumero ≥ alkuunumeron.
+
+## Siirto
+
+- **Yksilöivä tunnus, päivämäärät, luovuttaja ja saaja:**
+  - Ei tyhjää.
+- **Kpl ja hinta:**
+  - Positiivisia lukuja.
+
+## Poikkeusten käsittely
+
+- **Virheilmoitukset:**
+  - Selkeät syyt validointivirheille.
 
 ## Kohderyhmät
 
