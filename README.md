@@ -29,6 +29,8 @@
 
 # Entity-Relationship Diagram (ERD)
 
+![ERD Diagram](./assets/images/ERD.png)
+
 ## Entities
 
 ### SHAREHOLDER
