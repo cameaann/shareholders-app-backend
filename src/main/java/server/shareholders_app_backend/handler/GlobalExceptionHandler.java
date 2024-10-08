@@ -16,47 +16,54 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// Tämä luokka käsittelee globaalisti kaikki sovelluksen poikkeukset
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Käsitellään ConstraintViolationException-tyyppiset poikkeukset
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody
     public ResponseEntity<CustomErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations(); // Haetaan rajoitusloukkaukset
         List<String> errorMessages = violations.stream()
-                .map(ConstraintViolation::getMessage)
+                .map(ConstraintViolation::getMessage) // Kerätään virheviestit
                 .collect(Collectors.toList());
 
+        // Luodaan CustomErrorResponse-olio virheviesteillä
         CustomErrorResponse errorResponse = new CustomErrorResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                "Validation error occurred.",
-                errorMessages);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+                LocalDateTime.now(), // Aikaleima
+                HttpStatus.BAD_REQUEST.value(), // HTTP-tila
+                "Bad Request", // Virheen tyyppi
+                "Validation error occurred.", // Virheen kuvaus
+                errorMessages); // Yksityiskohtaiset virheviestit
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // Palautetaan virhevastaus
     }
 
+    // Käsitellään ShareholderDeletionException-tyyppiset poikkeukset
     @ExceptionHandler(ShareholderDeletionException.class)
     @ResponseBody
     public ResponseEntity<CustomErrorResponse> handleShareholderDeletionException(ShareholderDeletionException ex) {
+        // Luodaan CustomErrorResponse-olio poikkeuksen viestillä
         CustomErrorResponse errorResponse = new CustomErrorResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                ex.getMessage(),
-                Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+                LocalDateTime.now(), // Aikaleima
+                HttpStatus.BAD_REQUEST.value(), // HTTP-tila
+                "Bad Request", // Virheen tyyppi
+                ex.getMessage(), // Virheen kuvaus
+                Collections.singletonList(ex.getMessage())); // Virheviesti
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // Palautetaan virhevastaus
     }
 
+    // Käsitellään kaikki muut poikkeukset
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<CustomErrorResponse> handleGenericException(Exception ex) {
+        // Luodaan CustomErrorResponse-olio odottamattomasta virheestä
         CustomErrorResponse errorResponse = new CustomErrorResponse(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                "An unexpected error occurred: " + ex.getMessage(),
-                Collections.singletonList("An unexpected error occurred."));
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                LocalDateTime.now(), // Aikaleima
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), // HTTP-tila
+                "Internal Server Error", // Virheen tyyppi
+                "An unexpected error occurred: " + ex.getMessage(), // Virheen kuvaus
+                Collections.singletonList("An unexpected error occurred.")); // Virheviesti
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR); // Palautetaan virhevastaus
     }
 }

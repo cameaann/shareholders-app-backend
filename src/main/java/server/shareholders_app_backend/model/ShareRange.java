@@ -8,28 +8,29 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 
+// Entiteetti, joka kuvaa osakealueita
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor // Ilmaisee, että luokalla on oletuskonstruktori
+@AllArgsConstructor // Luo konstruktorin kaikille kentille
 public class ShareRange {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id // Määrittelee kentän ensisijaiseksi avaimiksi
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Automaattinen arvon generointi tietokannassa
+    private Long id; // Osakealueen tunniste
 
-    @Column(nullable = false)
-    private int quantity; // Amount of shares owned
+    @Column(nullable = false) // Määrittää, että kenttä ei voi olla tyhjää
+    private int quantity; // Omistettujen osakkeiden määrä
 
-    @Column(nullable = false)
-    private int startNumber; // Calculated start number of shares
+    @Column(nullable = false) // Määrittää, että kenttä ei voi olla tyhjää
+    private int startNumber; // Lasketut osakkeiden alkanumerot
 
-    @Column(nullable = false)
-    private int endNumber; // Calculated end number of shares
+    @Column(nullable = false) // Määrittää, että kenttä ei voi olla tyhjää
+    private int endNumber; // Lasketut osakkeiden päätunnus
 
-    @ManyToOne
-    @JoinColumn(name = "shareholder_id", nullable = false)
-    @JsonBackReference
-    private Shareholder shareholder;
+    @ManyToOne // Määrittää monimutkaisen yhteyden Shareholder-oliolle
+    @JoinColumn(name = "shareholder_id", nullable = false) // Määrittää yhdistettävän sarakkeen tietokannassa
+    @JsonBackReference // Estää syklisen viittauksen JSON-sarjennuksessa
+    private Shareholder shareholder; // Osakkeenomistaja, jolle osakealue kuuluu
 }

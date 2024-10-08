@@ -5,14 +5,16 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+@Configuration // Määrittelee tämän luokan konfiguraatioluokaksi
 public class WebConfig implements WebMvcConfigurer {
 
+    // CORS-asetusten määrittely
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
+        // Määritellään, että kaikki reitit (/**) sallitaan
         registry.addMapping("/**")
-                .allowedOrigins("*") // Allow all origins
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow these HTTP methods
-                .allowedHeaders("*"); // Allow all headers (or specify necessary ones)
+                .allowedOrigins("*") // Sallitaan kaikki alkuperät
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Sallitaan nämä HTTP-menetelmät
+                .allowedHeaders("*"); // Sallitaan kaikki otsikot (tai määritellään tarvittavat)
     }
 }
