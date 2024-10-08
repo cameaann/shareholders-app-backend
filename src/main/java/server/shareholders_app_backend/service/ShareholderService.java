@@ -45,7 +45,9 @@ public class ShareholderService {
         return shareholderRepository.findById(id)
                 .map(shareholder -> {
                     shareholder.setName(updatedShareholder.getName());
-                    shareholder.setPersonalIdOrCompanyId(updatedShareholder.getPersonalIdOrCompanyId());
+                    if(updatedShareholder.getPersonalIdOrCompanyId() != null) {
+                        shareholder.setPersonalIdOrCompanyId(updatedShareholder.getPersonalIdOrCompanyId());
+                    }
                     shareholder.setPlaceOfResidenceOrHeadquarters(updatedShareholder.getPlaceOfResidenceOrHeadquarters());
                     shareholder.setAddress(updatedShareholder.getAddress());
                     shareholder.setEmailAddress(updatedShareholder.getEmailAddress());

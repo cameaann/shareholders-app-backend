@@ -54,13 +54,13 @@ public class ShareRangeController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<List<ShareTransferHistory>> transferShares(@RequestBody TransferRequestDto transferRequest) {
+    public ResponseEntity<?> transferShares(@RequestBody TransferRequestDto transferRequest) {
         try {
             shareRangeService.transferShares(transferRequest);
             List<ShareTransferHistory> history = shareTransferHistoryService.getAllTransferHistories();
             return ResponseEntity.ok(history);
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
