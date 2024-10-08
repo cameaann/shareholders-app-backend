@@ -6,35 +6,38 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
+// Tietosiirto-olio (DTO) osakkeiden omistusoikeuden siirtoa varten
 @Data
 @NoArgsConstructor
 public class TransferRequestDto {
 
-    @NotNull(message = "From Shareholder ID is required")
-    private Long fromShareholderId; // Seller (Luovuttaja / Myyjä)
+    @NotNull(message = "Luovuttajan ID on pakollinen")
+    private Long fromShareholderId; // Myyjä (Luovuttaja)
 
-    @NotNull(message = "To Shareholder ID is required")
-    private Long toShareholderId; // Buyer (Saaja / Ostaja)
+    @NotNull(message = "Saajan ID on pakollinen")
+    private Long toShareholderId; // Ostaja (Saaja)
 
-    @NotNull(message = "Quantity is required")
-    private Integer quantity; // Quantity (kpl)
+    @NotNull(message = "Määrä on pakollinen")
+    private Integer quantity; // Määrä (kpl)
 
-    @NotNull(message = "Transfer Date is required")
-    private LocalDate transferDate; // Transfer Date (Saantopäivä)
+    @NotNull(message = "Siirtopäivämäärä on pakollinen")
+    private LocalDate transferDate; // Siirtopäivämäärä (Saantopäivä)
 
-    private LocalDate paymentDate; // Payment Date (Maksupvm), optional
-    private boolean transferTax; // Transfer Tax (Varainsiirtovero)
-    private Double pricePerShare; // Price per Share (Hinta per osake), optional
-    private String additionalNotes; // Additional Notes (Huom.), optional
+    private LocalDate paymentDate; // Maksupäivämäärä (Maksupvm), valinnainen
+    private boolean transferTax; // Varainsiirtovero (Transfer Tax)
+    private Double pricePerShare; // Hinta per osake (Hinta per osake), valinnainen
+    private String additionalNotes; // Lisätiedot (Huom.), valinnainen
 
-    // Method to calculate Finnish transfer tax (Varainsiirtovero)
+    // Metodi Suomen varainsiirtoveron (Varainsiirtovero) laskemiseksi
     public double calculateTransferTax() {
+        // Tarkista, onko varainsiirtovero sovellettavissa
         if (transferTax) {
-            double effectivePricePerShare = (pricePerShare != null) ? pricePerShare : 0.0;
-            double totalValue = quantity * effectivePricePerShare;
-            double taxRate = 0.02; // Finnish transfer tax rate (2%)
-            return totalValue * taxRate;
+            double effectivePricePerShare = (pricePerShare != null) ? pricePerShare : 0.0; // Käytä annettua hintaa tai
+                                                                                           // oletuksena 0.0
+            double totalValue = quantity * effectivePricePerShare; // Laske osakkeiden kokonaisarvo
+            double taxRate = 0.02; // Suomen varainsiirtoveroprosentti (2%)
+            return totalValue * taxRate; // Laske ja palauta varainsiirtovero
         }
-        return 0.0;
+        return 0.0; // Palauta 0, jos varainsiirtoveroa ei sovelleta
     }
 }

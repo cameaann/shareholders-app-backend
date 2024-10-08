@@ -14,21 +14,26 @@ public class ShareTransferHistoryService {
     @Autowired
     private ShareTransferHistoryRepository shareTransferHistoryRepository;
 
+    // Hakee kaikki siirtohistoriat
     public List<ShareTransferHistory> getAllTransferHistories() {
-        return shareTransferHistoryRepository.findAll();
+        return shareTransferHistoryRepository.findAll(); // Palauttaa kaikki siirtohistoriat
     }
 
+    // Hakee siirtohistorian ID:n perusteella
     public Optional<ShareTransferHistory> getTransferHistoryById(Long id) {
-        return shareTransferHistoryRepository.findById(id);
+        return shareTransferHistoryRepository.findById(id); // Palauttaa valitun siirtohistorian, jos se löytyy
     }
 
+    // Tallentaa uuden siirtohistorian
     public ShareTransferHistory saveTransferHistory(ShareTransferHistory transferHistory) {
-        return shareTransferHistoryRepository.save(transferHistory);
+        return shareTransferHistoryRepository.save(transferHistory); // Tallentaa siirtohistorian tietokantaan
     }
 
+    // Päivittää olemassa olevan siirtohistorian
     public ShareTransferHistory updateTransferHistory(Long id, ShareTransferHistory updatedTransferHistory) {
         return shareTransferHistoryRepository.findById(id)
                 .map(existingTransferHistory -> {
+                    // Päivittää olemassa olevat kentät uusilla arvoilla
                     existingTransferHistory.setFromShareholderId(updatedTransferHistory.getFromShareholderId());
                     existingTransferHistory.setToShareholderId(updatedTransferHistory.getToShareholderId());
                     existingTransferHistory.setQuantity(updatedTransferHistory.getQuantity());
@@ -37,8 +42,11 @@ public class ShareTransferHistoryService {
                     existingTransferHistory.setTransferTax(updatedTransferHistory.isTransferTax());
                     existingTransferHistory.setPricePerShare(updatedTransferHistory.getPricePerShare());
                     existingTransferHistory.setAdditionalNotes(updatedTransferHistory.getAdditionalNotes());
-                    return shareTransferHistoryRepository.save(existingTransferHistory);
+                    return shareTransferHistoryRepository.save(existingTransferHistory); // Tallentaa päivitetyn
+                                                                                         // siirtohistorian
                 })
-                .orElseThrow(() -> new RuntimeException("Transfer history not found with id " + id));
+                .orElseThrow(() -> new RuntimeException("Siirtohistoriaa ei löytynyt ID:llä " + id)); // Poikkeus, jos
+                                                                                                      // siirtohistoriaa
+                                                                                                      // ei löydy
     }
 }
