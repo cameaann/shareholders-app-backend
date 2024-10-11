@@ -1,6 +1,7 @@
 package server.shareholders_app_backend.controller;
 
 import server.shareholders_app_backend.dto.ShareRangeDTO;
+import server.shareholders_app_backend.dto.ShareholderWithSharesDTO;
 import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.model.ShareTransferHistory;
@@ -39,11 +40,11 @@ public class ShareRangeController {
     }
 
     @PostMapping
-    public ResponseEntity<ShareRangeDTO> createShare(@RequestBody ShareRangeDTO shareRangeDTO) {
+    public ResponseEntity<ShareRangeDTO> createShare(@RequestBody ShareholderWithSharesDTO shareholderWithSharesDTO) {
         try {
             ShareRange createdShareRange = shareRangeService.addShareRange(
-                    shareRangeDTO.getShareholderId(),
-                    shareRangeDTO.getQuantity());
+                    shareholderWithSharesDTO.getShareholder().getId(),
+                    shareholderWithSharesDTO.getShares());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ShareRangeDTO(createdShareRange));
         } catch (IllegalStateException e) {
