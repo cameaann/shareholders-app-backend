@@ -12,32 +12,36 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/transfer-history")
+@RequestMapping("/api/transfer-history") // Määritellään reitti, jota tämä kontrolleri käsittelee
 public class ShareTransferHistoryController {
 
     @Autowired
-    private ShareTransferHistoryService shareTransferHistoryService;
+    private ShareTransferHistoryService shareTransferHistoryService; // Injektoidaan ShareTransferHistoryService
 
+    // Hae kaikki siirtohistoriat
     @GetMapping
     public ResponseEntity<List<ShareTransferHistory>> getAllTransferHistories() {
         List<ShareTransferHistory> transferHistories = shareTransferHistoryService.getAllTransferHistories();
-        return ResponseEntity.ok(transferHistories);
+        return ResponseEntity.ok(transferHistories); // Palauttaa kaikki siirtohistoriat
     }
 
+    // Hae siirtohistoria ID:n perusteella
     @GetMapping("/{id}")
     public ResponseEntity<ShareTransferHistory> getTransferHistoryById(@PathVariable Long id) {
         Optional<ShareTransferHistory> transferHistory = shareTransferHistoryService.getTransferHistoryById(id);
-        return transferHistory.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return transferHistory.map(ResponseEntity::ok) // Palauttaa löytyneen siirtohistorian
+                .orElseGet(() -> ResponseEntity.notFound().build()); // Palauttaa 404, jos siirtohistoriaa ei löydy
     }
 
+    // Luo uusi siirtohistoria
     @PostMapping
     public ResponseEntity<ShareTransferHistory> createTransferHistory(
             @RequestBody ShareTransferHistory transferHistory) {
         ShareTransferHistory createdTransferHistory = shareTransferHistoryService.saveTransferHistory(transferHistory);
-        return ResponseEntity.status(201).body(createdTransferHistory);
+        return ResponseEntity.status(201).body(createdTransferHistory); // Palauttaa 201, kun siirtohistoria on luotu
     }
 
+    // Päivitä maksupäivämäärä siirtohistorian perusteella
     @PutMapping("/{id}")
     public ResponseEntity<ShareTransferHistory> updatePaymentDate(
             @PathVariable Long id,
@@ -46,19 +50,18 @@ public class ShareTransferHistoryController {
         if (existingHistory.isPresent()) {
             ShareTransferHistory transferHistory = existingHistory.get();
 
-            // Only update the fields present in the request
+            // Päivitetään vain ne kentät, jotka ovat pyynnössä
             if (updates.containsKey("paymentDate")) {
                 String paymentDateStr = (String) updates.get("paymentDate");
                 LocalDate paymentDate = LocalDate.parse(paymentDateStr);
                 transferHistory.setPaymentDate(paymentDate);
             }
 
-            // Save the updated history
+            // Tallenna päivitetty historia
             ShareTransferHistory updatedHistory = shareTransferHistoryService.saveTransferHistory(transferHistory);
-            return ResponseEntity.ok(updatedHistory);
+            return ResponseEntity.ok(updatedHistory); // Palauttaa päivitetyn siirtohistorian
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // Palauttaa 404, jos siirtohistoriaa ei löydy
         }
     }
-
 }

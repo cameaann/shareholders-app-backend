@@ -23,7 +23,8 @@
    - [Osakkeet](#osakkeet)
    - [Siirto](#siirto)
 4. [Poikkeusten käsittely](#poikkeusten-käsittely)
-5. [Kohderyhmät](#kohderyhmät)
+5. [Pakettiselitykset](#pakettiselitykset)
+6. [Kohderyhmät](#kohderyhmät)
 
 ---
 
@@ -194,6 +195,26 @@
 ## Poikkeusten käsittely
 
 - **Virheilmoitukset:** Selkeät syyt validointivirheille.
+
+## Pakettiselitykset
+
+- **config**: Hallitsee sovelluksen asetuksia, kuten CORS-sääntöjä.
+
+- **controller**: Käsittelee käyttäjien pyyntöjä ja palauttaa vastauksia.
+
+- **dto**: Sisältää tietosiirto-objekteja tiedon siirtämiseen eri osien välillä.
+
+- **exception**: Säilyttää virheitä ja käyttäjän määrittämiä poikkeuksia.
+
+- **model**: Kuvastaa tietorakenteita, jotka vastaavat tietokannan tauluja.
+
+- **repository**: Vastaa tietojen käsittelystä tietokannassa.
+
+- **service**: Sisältää sovelluksen liiketoimintalogiikan ja säännöt.
+
+- **handler**: Hallitsee poikkeuksia ja virheiden käsittelyä.
+
+- **application**: Käynnistää sovelluksen Spring Boot -ympäristössä.
 
 ## Kohderyhmät
 

@@ -30,32 +30,37 @@ public class ShareRangeService {
     @Autowired
     private ShareTransferHistoryRepository historyRepository;
 
+    // Siirtää osakkeet osakkeenomistajien välillä
     @Transactional
     public void transferShares(TransferRequestDto transferRequest) {
+        // Hakee osakkeenomistajan, jolta osakkeet siirretään
         Shareholder fromShareholder = shareholderRepository.findById(transferRequest.getFromShareholderId())
                 .orElseThrow(() -> new NoSuchElementException(
-                        "Shareholder with ID " + transferRequest.getFromShareholderId() + " not found"));
+                        "Osakkeenomistajaa ID:llä " + transferRequest.getFromShareholderId() + " ei löytynyt"));
 
+        // Hakee osakkeenomistajan, jolle osakkeet siirretään
         Shareholder toShareholder = shareholderRepository.findById(transferRequest.getToShareholderId())
                 .orElseThrow(() -> new NoSuchElementException(
-                        "Shareholder with ID " + transferRequest.getToShareholderId() + " not found"));
+                        "Osakkeenomistajaa ID:llä " + transferRequest.getToShareholderId() + " ei löytynyt"));
 
-        int quantityToTransfer = transferRequest.getQuantity();
-        int remainingQuantity = quantityToTransfer;
+        int quantityToTransfer = transferRequest.getQuantity(); // Siirrettävien osakkeiden määrä
+        int remainingQuantity = quantityToTransfer; // Jäljellä oleva osakkeiden määrä siirtoa varten
 
-        // Retrieve and sort share ranges by startNumber
+        // Hakee ja lajittelee osakejoukot alkuluku mukaan
         List<ShareRange> shareRanges = shareRepository.findAllOrderedByStartNumber();
         for (ShareRange shareRange : shareRanges) {
+            // Tarkistaa, onko osakejoukko lähteeltä osakkeenomistajalta
             if (shareRange.getShareholder().equals(fromShareholder)) {
-                if (remainingQuantity <= 0)
+                if (remainingQuantity <= 0) // Jos kaikki osakkeet on siirretty, lopetetaan silmukka
                     break;
 
-                int availableQuantity = shareRange.getQuantity();
+                int availableQuantity = shareRange.getQuantity(); // Saatavilla olevien osakkeiden määrä
                 if (availableQuantity <= remainingQuantity) {
-                    remainingQuantity -= availableQuantity;
-                    shareRange.setShareholder(toShareholder);
-                    shareRepository.save(shareRange);
+                    remainingQuantity -= availableQuantity; // Vähennetään siirrettävien osakkeiden määrä
+                    shareRange.setShareholder(toShareholder); // Muutetaan osakkeenomistajaa
+                    shareRepository.save(shareRange); // Tallennetaan muutokset
                 } else {
+                    // Luodaan uusi osakejoukko, jos saatavilla olevat osakkeet riittävät
                     int newStartNumber = shareRange.getStartNumber() + remainingQuantity;
                     ShareRange newShareRange = new ShareRange();
                     newShareRange.setQuantity(remainingQuantity);
@@ -63,82 +68,88 @@ public class ShareRangeService {
                     newShareRange.setEndNumber(newStartNumber - 1);
                     newShareRange.setShareholder(toShareholder);
 
+                    // Vähennetään siirrettävien osakkeiden määrä alkuperäisestä osakejoukosta
                     shareRange.setQuantity(availableQuantity - remainingQuantity);
                     shareRange.setStartNumber(newStartNumber);
 
-                    shareRepository.save(newShareRange);
-                    shareRepository.save(shareRange);
-                    remainingQuantity = 0;
+                    shareRepository.save(newShareRange); // Tallennetaan uusi osakejoukko
+                    shareRepository.save(shareRange); // Tallennetaan päivitetty alkuperäinen osakejoukko
+                    remainingQuantity = 0; // Kaikki osakkeet on siirretty
                 }
             }
         }
 
+        // Tarkistetaan, että kaikki osakkeet on siirretty
         if (remainingQuantity > 0) {
-            throw new IllegalStateException("Not enough shares to transfer.");
+            throw new IllegalStateException("Ei tarpeeksi osakkeita siirrettäväksi.");
         }
 
-        // Save transfer history
+        // Tallennetaan siirtohistoria
         ShareTransferHistory history = new ShareTransferHistory();
         history.setFromShareholderId(transferRequest.getFromShareholderId());
         history.setToShareholderId(transferRequest.getToShareholderId());
         history.setQuantity(transferRequest.getQuantity());
-        history.setTransferDate(transferRequest.getTransferDate()); // Ensure this is set
-        history.setPaymentDate(transferRequest.getPaymentDate()); // Optional
+        history.setTransferDate(transferRequest.getTransferDate()); // Varmista, että tämä on asetettu
+        history.setPaymentDate(transferRequest.getPaymentDate()); // Valinnainen
         history.setTransferTax(transferRequest.isTransferTax());
 
-        // Use a default value if pricePerShare is null
+        // Käytetään oletusarvoa, jos pricePerShare on null
         double pricePerShare = (transferRequest.getPricePerShare() != null) ? transferRequest.getPricePerShare() : 0.0;
-        history.setPricePerShare(pricePerShare); // Optional
+        history.setPricePerShare(pricePerShare); // Valinnainen
 
-        // Calculate the total amount as quantity * pricePerShare
+        // Lasketaan kokonaissumma osakkeiden määrän ja osakkeen hinnan perusteella
         double totalAmount = pricePerShare * transferRequest.getQuantity();
         history.setTotalAmount(totalAmount);
 
-        history.setAdditionalNotes(transferRequest.getAdditionalNotes()); // Optional
+        history.setAdditionalNotes(transferRequest.getAdditionalNotes()); // Valinnainen
 
-        historyRepository.save(history);
+        historyRepository.save(history); // Tallennetaan siirtohistoria
     }
 
-    // Add this method to get all shares
+    // Hakee kaikki osakejoukot
     public List<ShareRangeDTO> getAllShares() {
         return shareRepository.findAllOrderedByStartNumber()
                 .stream()
-                .map(ShareRangeDTO::new)
+                .map(ShareRangeDTO::new) // Muuntaa ShareRange-oliot ShareRangeDTO-olioiksi
                 .collect(Collectors.toList());
     }
 
+    // Hakee osakejoukon ID:n perusteella
     public Optional<ShareRange> getShareById(Long id) {
         return shareRepository.findById(id);
     }
 
+    // Lisää uuden osakejoukon
     @Transactional
     public ShareRange addShareRange(Long shareholderId, int quantity) {
         Shareholder shareholder = shareholderRepository.findById(shareholderId)
-                .orElseThrow(() -> new NoSuchElementException("Shareholder with ID " + shareholderId + " not found"));
+                .orElseThrow(
+                        () -> new NoSuchElementException("Osakkeenomistajaa ID:llä " + shareholderId + " ei löytynyt"));
 
         Integer currentMaxEndNumber = shareRepository.findMaxEndNumber();
         if (currentMaxEndNumber == null) {
-            currentMaxEndNumber = 0;
+            currentMaxEndNumber = 0; // Alustetaan nollaksi, jos ei ole olemassa
         }
 
-        int startNumber = currentMaxEndNumber + 1;
-        int endNumber = startNumber + quantity - 1;
+        int startNumber = currentMaxEndNumber + 1; // Alkamisluku uudelle osakejoukolle
+        int endNumber = startNumber + quantity - 1; // Loppuluku
 
         ShareRange shareRange = new ShareRange();
         shareRange.setQuantity(quantity);
         shareRange.setStartNumber(startNumber);
         shareRange.setEndNumber(endNumber);
-        shareRange.setShareholder(shareholder);
+        shareRange.setShareholder(shareholder); // Asetetaan osakkeenomistaja
 
-        return shareRepository.save(shareRange);
+        return shareRepository.save(shareRange); // Tallennetaan osakejoukko
     }
 
+    // Poistaa osakejoukon ID:n perusteella
     @Transactional
     public void deleteShare(Long id) {
         if (shareRepository.existsById(id)) {
-            shareRepository.deleteById(id);
+            shareRepository.deleteById(id); // Poistaa osakejoukon
         } else {
-            throw new NoSuchElementException("ShareRange with ID " + id + " not found.");
+            throw new NoSuchElementException("ShareRange ID:llä " + id + " ei löytynyt.");
         }
     }
 }

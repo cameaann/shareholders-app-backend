@@ -6,7 +6,7 @@ import server.shareholders_app_backend.dto.TransferRequestDto;
 import server.shareholders_app_backend.model.ShareRange;
 import server.shareholders_app_backend.model.ShareTransferHistory;
 import server.shareholders_app_backend.service.ShareRangeService;
-import server.shareholders_app_backend.service.ShareTransferHistoryService; // Import the service
+import server.shareholders_app_backend.service.ShareTransferHistoryService; // Tuodaan palvelu
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +17,31 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/shares")
+@RequestMapping("/api/shares") // Määritellään reitti, jota tämä kontrolleri käsittelee
 public class ShareRangeController {
 
     @Autowired
-    private ShareRangeService shareRangeService;
+    private ShareRangeService shareRangeService; // Injektoidaan ShareRangeService
 
     @Autowired
-    private ShareTransferHistoryService shareTransferHistoryService; // Inject the service
+    private ShareTransferHistoryService shareTransferHistoryService; // Injektoidaan ShareTransferHistoryService
 
+    // Hae kaikki osakkeet
     @GetMapping
     public ResponseEntity<List<ShareRangeDTO>> getAllShares() {
         List<ShareRangeDTO> shares = shareRangeService.getAllShares();
-        return ResponseEntity.ok(shares);
+        return ResponseEntity.ok(shares); // Palauttaa kaikki osakkeet OK-tilassa
     }
 
+    // Hae osake ID:n perusteella
     @GetMapping("/{id}")
     public ResponseEntity<ShareRangeDTO> getShareById(@PathVariable Long id) {
         Optional<ShareRange> share = shareRangeService.getShareById(id);
-        return share.map(shareRange -> ResponseEntity.ok(new ShareRangeDTO(shareRange)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return share.map(shareRange -> ResponseEntity.ok(new ShareRangeDTO(shareRange))) // Palauttaa löytyneen osakkeen
+                .orElseGet(() -> ResponseEntity.notFound().build()); // Palauttaa 404, jos osaketta ei löydy
     }
 
+    // Luo uusi osake
     @PostMapping
     public ResponseEntity<ShareRangeDTO> createShare(@RequestBody ShareholderWithSharesDTO shareholderWithSharesDTO) {
         try {
@@ -48,32 +51,35 @@ public class ShareRangeController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ShareRangeDTO(createdShareRange));
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(null); // Virhetilanne, palauttaa 400
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // Palauttaa 404, jos osakkeen luominen epäonnistuu
         }
     }
 
+    // Siirrä osakkeet
     @PostMapping("/transfer")
     public ResponseEntity<?> transferShares(@RequestBody TransferRequestDto transferRequest) {
         try {
             shareRangeService.transferShares(transferRequest);
-            List<ShareTransferHistory> history = shareTransferHistoryService.getAllTransferHistories();
-            return ResponseEntity.ok(history);
+            List<ShareTransferHistory> history = shareTransferHistoryService.getAllTransferHistories(); // Hae
+                                                                                                        // siirtohistoria
+            return ResponseEntity.ok(history); // Palauttaa siirtohistorian
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()); // Virhetilanne, palauttaa 400 ja virheviestin
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // Palauttaa 404, jos osakkeiden siirto epäonnistuu
         }
     }
 
+    // Poista osake ID:n perusteella
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteShare(@PathVariable Long id) {
         try {
             shareRangeService.deleteShare(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build(); // Palauttaa 204, jos poisto onnistuu
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // Palauttaa 404, jos osaketta ei löydy
         }
     }
 }
